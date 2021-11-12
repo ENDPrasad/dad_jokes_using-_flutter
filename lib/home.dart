@@ -48,6 +48,7 @@ class _HomeState extends State<Home> {
     // If we miss this we will get the joke on the second click for the first time.
     getRandomJoke();
   }
+
   bool isClicked = false;
 
   @override
@@ -68,7 +69,7 @@ class _HomeState extends State<Home> {
           borderRadius: BorderRadius.circular(20.0),
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
               'Here is your joke',
@@ -100,8 +101,9 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
+            // Button to trigger the new joke
             GestureDetector(
-              onTap: (){
+              onTap: () {
                 setState(() {
                   getRandomJoke();
                 });
