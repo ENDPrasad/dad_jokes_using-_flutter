@@ -13,6 +13,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+
+      // To remove Debug banner on the top right corner
       debugShowCheckedModeBanner: false,
       title: 'Dad Jokes',
       theme: ThemeData(
