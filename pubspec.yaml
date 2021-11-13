@@ -36,6 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   # To run the http request
   http: ^0.13.4
+  flutter_fluid_slider: ^1.0.3
+  liquid_swipe: ^2.1.1
 
 dev_dependencies:
   flutter_test:
