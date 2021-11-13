@@ -1,7 +1,11 @@
+import 'dart:ui';
+
 import 'package:dad_jokes/components.dart';
+import 'package:dad_jokes/liquid_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
+import 'package:liquid_swipe/liquid_swipe.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -11,11 +15,15 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  // image url
   // Initial joke 😀
   var joke = 'This app will makes you smile 😀';
   // creating url using URI-which locates the resources in the web page
   // In our case JSON file
   var url = Uri.parse('https://icanhazdadjoke.com');
+
+  var image = 'https://source.unsplash.com/random';
+  var image_url = Uri.parse('https://api.thecatapi.com/v1/images/search');
 
   // Creating a function to get the joke from the API
   // Main logic behind this application
@@ -39,6 +47,19 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Future getRandomImage() async {
+    var imageResponse = await http.get(image_url,
+        headers: {'api_key': 'a7449f7e-ecf3-4dc0-a250-db075b32761f'});
+    if (imageResponse.statusCode == 200) {
+      var jsonFile_image = convert.jsonDecode(imageResponse.body);
+      image = jsonFile_image[0]['url'].toString();
+
+      // image = jsonFile_image['url'].toString();
+    } else {
+      image = 'https://source.unsplash.com/random';
+    }
+  }
+
   // Runs first before the build
   @override
   void initState() {
@@ -47,6 +68,7 @@ class _HomeState extends State<Home> {
     // To get the joke on the first click
     // If we miss this we will get the joke on the second click for the first time.
     getRandomJoke();
+    getRandomImage();
   }
 
   bool isClicked = false;
@@ -54,64 +76,41 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[400],
-      appBar: AppBar(
-        title: const Text('Dad Jokes'),
-        centerTitle: true,
-      ),
-      body: Container(
-        width: double.infinity,
-        // height: double.infinity,
-        margin: const EdgeInsets.all(20.0),
-        padding: const EdgeInsets.all(10.0),
-        decoration: BoxDecoration(
-          color: Colors.white24,
-          borderRadius: BorderRadius.circular(20.0),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Here is your joke',
-              style: TextStyle(
-                color: Colors.black45,
-                fontSize: 18.0,
-                fontFamily: 'Verdana',
-              ),
-            ),
-            // const Divider(
-            //   thickness: 5.0,
-            //   indent: 5.0,
-            //   color: Colors.black45,
-            // ),
-            Container(
-              alignment: Alignment.center,
-              width: double.infinity,
-              // height: 250.0,
-              margin: const EdgeInsets.all(10.0),
-              padding: const EdgeInsets.all(10.0),
-              child: Text(
-                joke.toString(),
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Verdana',
+      body: LiquidSwipe(
+        pages: [
+          Stack(
+            children: [
+              Liquid_slide(image: image),
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.all(10.0),
+                  color: Colors.black38,
+                  child: Text(
+                    joke,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25.0,
+                    ),
+                  ),
                 ),
               ),
-            ),
-            // Button to trigger the new joke
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  getRandomJoke();
-                });
-              },
-              child: CustomButtonWidget(),
-            ),
-          ],
+            ],
+          ),
+        ],
+        enableLoop: true,
+        waveType: WaveType.liquidReveal,
+        slideIconWidget: const Icon(
+          Icons.arrow_back_ios,
+          color: Colors.white,
         ),
+        onPageChangeCallback: (int val) {
+          setState(() {
+            getRandomJoke();
+            getRandomImage();
+          });
+        },
       ),
     );
   }
